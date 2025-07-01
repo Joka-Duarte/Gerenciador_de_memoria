@@ -12,6 +12,7 @@ public class Alocador implements Runnable {
         this.heap = heap;
     }
 
+    // Reprodutor
     @Override
     public void run() {
         try {

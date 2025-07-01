@@ -30,7 +30,6 @@ public class HeapSimulada {
         liberarMemoria(); // Tenta liberar memória (baseado na FIFO)
         compactar();      // Compacta a memória para juntar blocos livres
 
-
         imprimirEstadoHeap("ESTADO DA HEAP DEPOIS"); // <-- AQUI USAMOS DE NOVO
 
         inicio = buscarEspacoContiguo(r.blocosNecessarios); // Tenta encontrar espaço novamente
@@ -179,10 +178,8 @@ private int buscarEspacoContiguo(int blocos) {
         System.out.println("Tempo total de execucao: " + tempoTotalMs + " ms");
     }
     
- /**
- * Imprime o estado atual do array da heap no console para fins de depuração.
- * @param titulo Um título para a impressão, como "Antes da Compactação".
- */
+
+ // Imprime o estado atual do array da heap no console para fins de depuração.
 private void imprimirEstadoHeap(String titulo) {
     System.out.println("\n----- " + titulo + " -----");
     // Para não poluir o console, vamos imprimir 50 blocos por linha

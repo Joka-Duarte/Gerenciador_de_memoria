@@ -8,11 +8,11 @@ import java.util.concurrent.*;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        int heapKB; // Tamanho da Heap
+        int heapKB;
         int min;
         int max;
         int total; 
-        int threads; // Qauntidade de Threads
+        int threads;
         try (Scanner sc = new Scanner(System.in)) {
             System.out.print("Informe o tamanho da heap (em KB): ");
             heapKB = sc.nextInt();

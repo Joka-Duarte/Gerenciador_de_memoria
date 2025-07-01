@@ -17,6 +17,7 @@ public class GeradorRequisicoes implements Runnable {
         this.max = max;
     }
 
+    // Roda o programa k
     @Override
     public void run() {
         Random rand = new Random();
