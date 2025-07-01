@@ -5,7 +5,8 @@ import java.util.concurrent.BlockingQueue;
 public class Alocador implements Runnable {
     private final BlockingQueue<Requisicao> fila;
     private final HeapSimulada heap;
-
+    
+    // Construtor
     public Alocador(BlockingQueue<Requisicao> fila, HeapSimulada heap) {
         this.fila = fila;
         this.heap = heap;

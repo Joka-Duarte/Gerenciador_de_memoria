@@ -5,7 +5,7 @@ public class Requisicao {
     public final int tamanhoBytes; // Quantidade de blocos de memória (inteiros de 4 bytes) que esta requisição precisa
     public final int blocosNecessarios; // Tamanho total em bytes da requisição
 
-    // Construtor
+    // Construtor para as Requisicao
     public Requisicao(int id, int tamanhoBytes) {
         this.id = id;
         this.tamanhoBytes = tamanhoBytes;

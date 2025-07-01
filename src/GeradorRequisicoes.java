@@ -8,7 +8,8 @@ public class GeradorRequisicoes implements Runnable {
     private final int total;
     private final int min;
     private final int max;
-
+    
+    // Construtor
     public GeradorRequisicoes(BlockingQueue<Requisicao> fila, int total, int min, int max) {
         this.fila = fila;
         this.total = total;

@@ -46,6 +46,7 @@ public class HeapSimulada {
                 inicio = buscarEspacoContiguo(r.blocosNecessarios); // Tenta encontrar espaço novamente
                 if (inicio == -1) return false; // Se ainda não há espaço, a alocação falha
             }*/
+            
             // Se encontrou espaço, aloca os blocos
             for (int i = 0; i < r.blocosNecessarios; i++) {
                 heap[inicio + i] = r.id; // Marca os blocos da heap com o ID da requisição
@@ -59,7 +60,7 @@ public class HeapSimulada {
         }
     }
 
-    /* Metodo First Fit
+    // Metodo First Fit
 private int buscarEspacoContiguo(int blocos) {
     int livres = 0, inicio = -1;
 
@@ -74,7 +75,6 @@ private int buscarEspacoContiguo(int blocos) {
     }
     return -1; // Não encontrou espaço
 }
-*/
     
     // Metodo Worst Fit
 private int buscarEspacoContiguo(int blocos) {
@@ -106,7 +106,7 @@ private int buscarEspacoContiguo(int blocos) {
 }
 
     
-    /* Metodo Best Fit
+    // Metodo Best Fit
 private int buscarEspacoContiguo(int blocos) {
     int melhorInicio = -1; // Início do bloco mais "justo" encontrado
     int melhorTamanho = Integer.MAX_VALUE; // Tamanho do bloco mais "justo"
@@ -134,7 +134,7 @@ private int buscarEspacoContiguo(int blocos) {
     }
     return melhorInicio; // Retorna o início do bloco que melhor se encaixa
 }
-*/
+
     private void liberarMemoria() {
         int blocosParaLiberar = (int) (heap.length * 0.3); // Define uma meta: liberar 30% do total de blocos da heap
         int liberados = 0; // Contador de blocos efetivamente liberados nesta chamada
