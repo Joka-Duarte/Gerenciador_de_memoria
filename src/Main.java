@@ -1,5 +1,5 @@
 
-// Trabalho Parcial - Simulador de Gerenciador de Memoria Dinasmica
+// Trabalho Final - Simulador de Gerenciador de Memoria Dinamica
 // Integrantes Breno Henrique & João Duarte
 
 
