@@ -11,8 +11,11 @@ public class Main {
         int heapKB;
         int min;
         int max;
-        int total; 
+        int total;
         int threads;
+        EstrategiaAlocacao estrategia;
+        boolean modoVerificacao;
+
         try (Scanner sc = new Scanner(System.in)) {
             System.out.print("Informe o tamanho da heap (em KB): ");
             heapKB = sc.nextInt();
@@ -24,10 +27,32 @@ public class Main {
             total = sc.nextInt();
             System.out.print("Informe o numero de threads: ");
             threads = sc.nextInt();
+
+            // ----- NOVA SEÇÃO: SELEÇÃO DA ESTRATÉGIA -----
+            System.out.println("\nEscolha a estrategia de alocacao:");
+            System.out.println("1 - First Fit");
+            System.out.println("2 - Worst Fit");
+            System.out.println("3 - Best Fit");
+            System.out.print("Opcao: ");
+            int escolha = sc.nextInt();
+
+            switch (escolha) {
+                case 1 -> estrategia = EstrategiaAlocacao.FIRST_FIT;
+                case 2 -> estrategia = EstrategiaAlocacao.WORST_FIT;
+                case 3 -> estrategia = EstrategiaAlocacao.BEST_FIT;
+                default -> {
+                    System.out.println("Opcao invalida. Usando First-Fit como padrao.");
+                    estrategia = EstrategiaAlocacao.FIRST_FIT;
+                }
+            }
+            // Pergunta ao usuário e atribui um valor à variável 'modoVerificacao'
+            System.out.print("\nAtivar modo de verificação da heap? (S/N): ");
+            String respostaVerificacao = sc.next();
+            modoVerificacao = respostaVerificacao.equalsIgnoreCase("S");
         }
 
         BlockingQueue<Requisicao> fila = new LinkedBlockingQueue<>();
-        HeapSimulada heap = new HeapSimulada(heapKB);
+        HeapSimulada heap = new HeapSimulada(heapKB, estrategia, modoVerificacao);
 
         Thread gerador = new Thread(new GeradorRequisicoes(fila, total, min, max));
 
@@ -48,5 +73,16 @@ public class Main {
 
         long fim = System.currentTimeMillis();
         heap.imprimirResultado(fim - inicio);
+        
+        try (Scanner sc = new Scanner(System.in)) {
+        System.out.print("\nDeseja imprimir o estado final da heap? (S/N): ");
+        String resposta = sc.next();
+        if (resposta.equalsIgnoreCase("S")) {
+        // 2. Se o usuário disser sim, chama o método público na heap.
+        heap.imprimirEstadoHeap("ESTADO FINAL DA HEAP");
+        }
+    }
+
+    System.out.println("\nSimulação concluída.");
     }
 }
