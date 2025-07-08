@@ -22,7 +22,7 @@ public class HeapSimulada {
         this.modoVerificacao = modoVerificacao;
         System.out.println("\nHeap iniciada com a estrategia: " + estrategia);
         if (this.modoVerificacao) {
-            System.out.println(">>> MODO DE VERIFICAÇÃO ATIVADO <<<");
+            System.out.println(">>> MODO DE VERIFICACAO ATIVADO <<<");
         }
     }
 
@@ -39,7 +39,7 @@ public class HeapSimulada {
                 compactar();
                 if (this.modoVerificacao) {
                     if (!verificarAposCompactacao(blocosAntes)) {
-                        System.err.println("!! ERRO CRÍTICO NA COMPACTAÇÃO. O estado da heap pode estar corrompido.");
+                        System.err.println("!! ERRO CRITICO NA COMPACTACAO. O estado da heap pode estar corrompido.");
                         /*System.err.println("!! EXIBINDO ESTADO DA HEAP APÓS A FALHA PARA DIAGNÓSTICO:");
                         imprimirEstadoHeap("ESTADO DA HEAP CORROMPIDO");*/
                     }
@@ -72,7 +72,7 @@ public class HeapSimulada {
             case WORST_FIT -> {
                 return buscarComWorstFit(blocos);
             }
-            default -> throw new IllegalStateException("Estratégia de alocação desconhecida: " + estrategia);
+            default -> throw new IllegalStateException("Estrategia de alocacao desconhecida: " + estrategia);
         }
     }
     
@@ -172,7 +172,7 @@ public class HeapSimulada {
     private boolean verificarAposCompactacao(long blocosOcupadosAntes) {
         long blocosOcupadosDepois = Arrays.stream(heap).filter(val -> val != 0).count();
         if (blocosOcupadosAntes != blocosOcupadosDepois) {
-            System.err.printf("!! FALHA DE INTEGRIDADE: Perda de dados na compactação. Antes: %d, Depois: %d%n", blocosOcupadosAntes, blocosOcupadosDepois);
+            System.err.printf("!! FALHA DE INTEGRIDADE: Perda de dados na compactacao. Antes: %d, Depois: %d%n", blocosOcupadosAntes, blocosOcupadosDepois);
             return false;
         }
         boolean encontrouBlocoLivre = false;
@@ -181,7 +181,7 @@ public class HeapSimulada {
                 encontrouBlocoLivre = true;
             }
             if (encontrouBlocoLivre && heap[i] != 0) {
-                System.err.println("!! FALHA ESTRUTURAL: Bloco ocupado encontrado após espaço livre. A heap não está compactada.");
+                System.err.println("!! FALHA ESTRUTURAL: Bloco ocupado encontrado apos espaço livre. A heap nao esta compactada.");
                 return false;
             }
         }
@@ -201,12 +201,12 @@ public class HeapSimulada {
 
     public void imprimirResultado(long tempoTotalMs) {
         System.out.println("\n----- RESULTADOS FINAIS -----");
-        System.out.println("Estratégia de Alocação Utilizada: " + estrategia);
-        System.out.println("Total de requisições atendidas: " + totalAlocadas);
-        System.out.println("Tamanho médio das variáveis alocadas: " + (totalAlocadas > 0 ? (totalBytesAlocados / totalAlocadas) : 0) + " bytes");
-        System.out.println("Total de variáveis removidas (FIFO): " + totalRemovidas);
-        System.out.println("Chamadas ao algoritmo de compactação: " + totalCompactacoes);
-        System.out.println("Tempo total de execução: " + tempoTotalMs + " ms");
+        System.out.println("Estrategia de Alocacao Utilizada: " + estrategia);
+        System.out.println("Total de requisicao atendidas: " + totalAlocadas);
+        System.out.println("Tamanho medio das variaveis alocadas: " + (totalAlocadas > 0 ? (totalBytesAlocados / totalAlocadas) : 0) + " bytes");
+        System.out.println("Total de variaveis removidas (FIFO): " + totalRemovidas);
+        System.out.println("Chamadas ao algoritmo de compactacao: " + totalCompactacoes);
+        System.out.println("Tempo total de execucao: " + tempoTotalMs + " ms");
     }
     
 }

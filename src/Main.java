@@ -11,10 +11,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
-        // --- SEÇÃO DE CONFIGURAÇÃO (Comum a ambas as versões) ---
+        // --- SEÇÃO DE CONFIGURAÇÃO
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("----- CONFIGURAÇÃO DA SIMULAÇÃO -----");
+        System.out.println("----- CONFIGURACAO DA SIMULACAO -----");
         System.out.print("Informe o tamanho da heap (em KB): ");
         int heapKB = sc.nextInt();
         System.out.print("Informe o tamanho minimo da variavel (bytes): ");
@@ -40,7 +40,7 @@ public class Main {
         }
 
         // --- SEÇÃO DE SELEÇÃO DO MODO DE EXECUÇÃO ---
-        System.out.println("\nEscolha o modo de execução:");
+        System.out.println("\nEscolha o modo de execucao:");
         System.out.println("1 - Sequencial (Single-Thread)");
         System.out.println("2 - Paralelo (Multi-Thread)");
         System.out.print("Opcao: ");
@@ -48,7 +48,7 @@ public class Main {
         
         // Cria a Heap. Ela é usada em ambos os modos.
         // O modo de verificação pode ser ativado para qualquer um dos dois.
-        System.out.print("\nAtivar modo de verificação da heap? (S/N): ");
+        System.out.print("\nAtivar modo de verificacao da heap? (S/N): ");
         boolean modoVerificacao = sc.next().equalsIgnoreCase("S");
         HeapSimulada heap = new HeapSimulada(heapKB, estrategia, modoVerificacao);
 
@@ -68,14 +68,14 @@ public class Main {
         }
         
         sc.close();
-        System.out.println("\nSimulação concluída.");
+        System.out.println("\nSimulacao concluida.");
     }
 
     /**
      * Executa a simulação de forma totalmente sequencial, em uma única thread.
      */
     private static void executarVersaoSequencial(int total, int min, int max, HeapSimulada heap) {
-        System.out.println("\n--- INICIANDO EXECUÇÃO SEQUENCIAL ---");
+        System.out.println("\n--- INICIANDO EXECUCAO SEQUENCIAL ---");
         
         // 1. Gera todas as requisições de uma vez, em memória.
         GeradorRequisicoes gerador = new GeradorRequisicoes(null, total, min, max); // A fila não é necessária aqui
@@ -96,7 +96,7 @@ public class Main {
      * Executa a simulação de forma paralela, usando o padrão Produtor-Consumidor.
      */
     private static void executarVersaoParalela(int total, int min, int max, int threads, HeapSimulada heap) throws InterruptedException {
-        System.out.println("\n--- INICIANDO EXECUÇÃO PARALELA COM " + threads + " THREADS ---");
+        System.out.println("\n--- INICIANDO EXECUCAO PARALELA COM " + threads + " THREADS ---");
 
         BlockingQueue<Requisicao> fila = new LinkedBlockingQueue<>();
         Thread gerador = new Thread(new GeradorRequisicoes(fila, total, min, max));
