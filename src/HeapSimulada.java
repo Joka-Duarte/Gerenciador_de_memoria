@@ -4,6 +4,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
+/*
+  Representa a memória principal (Heap) da simulação.
+  Gerencia a alocação, liberação e compactação da memória de forma concorrente e segura.
+ */
 public class HeapSimulada {
     private final int[] heap;
     private final Queue<Requisicao> fifo = new LinkedList<>();
@@ -15,7 +19,12 @@ public class HeapSimulada {
     private long totalBytesAlocados = 0;
     private int totalRemovidas = 0;
     private int totalCompactacoes = 0;
-
+    /*
+      Construtor da HeapSimulada.
+      @param tamanhoKB O tamanho da heap em kilobytes.
+      @param estrategia O algoritmo de alocação a ser usado (First-Fit, Best-Fit, Worst-Fit).
+      @param modoVerificacao Se true, ativa os testes de integridade após operações críticas.
+     */
     public HeapSimulada(int tamanhoKB, EstrategiaAlocacao estrategia, boolean modoVerificacao) {
         this.heap = new int[tamanhoKB * 1024 / 4];
         this.estrategia = estrategia;
@@ -25,42 +34,55 @@ public class HeapSimulada {
             System.out.println(">>> MODO DE VERIFICACAO ATIVADO <<<");
         }
     }
-
+    
+    /*
+      Tenta alocar uma requisição na heap. Se não houver espaço, dispara a liberação de memória e a compactação.
+     */
     public boolean alocar(Requisicao r) {
         lock.lock();
         try {
-            int inicio = buscarEspacoContiguo(r.blocosNecessarios);
+        int inicio = buscarEspacoContiguo(r.blocosNecessarios);
+        // Se não encontrou espaço na primeira tentativa, inicia o processo de limpeza.
+        if (inicio == -1) {
+            // 1. PRIMEIRO, executamos a liberação de memória para criar espaço.
+            liberarMemoria();
+            long blocosAposLiberacao = 0;
+            // Se o modo de verificação estiver ativo, preparamos o teste.
+            if (this.modoVerificacao) {
+                // 2. AGORA, contamos os blocos, DEPOIS da liberação e ANTES da compactação.
+                // Isso isola o teste para validar apenas a operação de compactar.
+                blocosAposLiberacao = Arrays.stream(heap).filter(val -> val != 0).count();
+            }
+            // 3. Em seguida, executamos a compactação para juntar os espaços livres.
+            compactar();
+            // 4. E finalmente, se o modo estiver ativo, verificamos se a compactação foi bem-sucedida.
+            if (this.modoVerificacao) {
+                if (!verificarAposCompactacao(blocosAposLiberacao)) {
+                    // A verificação agora compara estados consistentes e não deve mais falhar.
+                    System.err.println("!! ERRO CRITICO NA COMPACTACAO DETECTADO. O estado da heap pode estar corrompido.");
+                }
+            }
+            // Tenta encontrar espaço novamente após todo o processo de limpeza.
+            inicio = buscarEspacoContiguo(r.blocosNecessarios);
             if (inicio == -1) {
-                long blocosAntes = 0;
-                if (this.modoVerificacao) {
-                    blocosAntes = Arrays.stream(heap).filter(val -> val != 0).count();
-                }
-                liberarMemoria();
-                compactar();
-                if (this.modoVerificacao) {
-                    if (!verificarAposCompactacao(blocosAntes)) {
-                        System.err.println("!! ERRO CRITICO NA COMPACTACAO. O estado da heap pode estar corrompido.");
-                        /*System.err.println("!! EXIBINDO ESTADO DA HEAP APÓS A FALHA PARA DIAGNÓSTICO:");
-                        imprimirEstadoHeap("ESTADO DA HEAP CORROMPIDO");*/
-                    }
-                }
-                inicio = buscarEspacoContiguo(r.blocosNecessarios);
-                if (inicio == -1) {
-                    return false;
-                }
+                return false; // Falha mesmo após a limpeza.
             }
-            for (int i = 0; i < r.blocosNecessarios; i++) {
-                heap[inicio + i] = r.id;
-            }
-            fifo.add(r);
-            totalAlocadas++;
-            totalBytesAlocados += r.tamanhoBytes;
-            return true;
+        }
+        // Se encontrou espaço (seja na primeira tentativa ou depois da limpeza), aloca aqui.
+        for (int i = 0; i < r.blocosNecessarios; i++) {
+            heap[inicio + i] = r.id;
+        }
+        fifo.add(r);
+        totalAlocadas++;
+        totalBytesAlocados += r.tamanhoBytes;
+        return true;
+
         } finally {
             lock.unlock();
         }
     }
 
+    // Seletor para os tipos de algoritmos de alocação
     private int buscarEspacoContiguo(int blocos) {
         switch (estrategia) {
             case FIRST_FIT -> {
@@ -76,6 +98,7 @@ public class HeapSimulada {
         }
     }
     
+    // Metodo First Fit
     private int buscarComFirstFit(int blocos) {
         int livres = 0;
         int inicio = -1;
@@ -91,6 +114,7 @@ public class HeapSimulada {
         return -1;
     }
 
+    // Metodo Worst Fit
     private int buscarComWorstFit(int blocos) {
         int piorInicio = -1;
         int piorTamanho = -1;
@@ -114,6 +138,7 @@ public class HeapSimulada {
         return piorInicio;
     }
 
+    // Metodo Best Fit
     private int buscarComBestFit(int blocos) {
         int melhorInicio = -1;
         int melhorTamanho = Integer.MAX_VALUE;
@@ -137,6 +162,10 @@ public class HeapSimulada {
         return melhorInicio;
     }
 
+    /**
+     * Libera memória removendo as requisições mais antigas (FIFO) até que
+     * uma meta de liberação (30% da heap) seja atingida.
+     */
     private void liberarMemoria() {
         int blocosParaLiberar = (int) (heap.length * 0.3);
         int liberados = 0;
@@ -152,6 +181,10 @@ public class HeapSimulada {
         }
     }
 
+    /**
+     * Compacta a heap usando um algoritmo "in-place" com dois ponteiros,
+     * que não requer a alocação de um array extra. É mais eficiente em memória.
+     */
     private void compactar() {
         int ponteiroEscrita = 0;
         int ponteiroLeitura = 0;
@@ -169,6 +202,13 @@ public class HeapSimulada {
         totalCompactacoes++;
     }
 
+    // --- MÉTODOS DE VERIFICAÇÃO E DIAGNÓSTICO ---
+    /*
+      Realiza uma verificação automatizada da heap para garantir que a compactação
+      foi bem-sucedida. Verifica a perda de dados e a estrutura da heap.
+      @param blocosOcupadosAntes A contagem de blocos que estavam ocupados ANTES da compactação.
+      @return true se a heap passou na verificação, false caso contrário.
+     */
     private boolean verificarAposCompactacao(long blocosOcupadosAntes) {
         long blocosOcupadosDepois = Arrays.stream(heap).filter(val -> val != 0).count();
         if (blocosOcupadosAntes != blocosOcupadosDepois) {
@@ -187,7 +227,11 @@ public class HeapSimulada {
         }
         return true;
     }
-
+    
+    /*
+      Imprime o estado atual do array da heap no console.
+      Usado como ferramenta de diagnóstico quando uma verificação de integridade falha.
+     */
     public void imprimirEstadoHeap(String titulo) {
         System.out.println("\n----- " + titulo + " -----");
         for (int i = 0; i < heap.length; i++) {
@@ -198,7 +242,10 @@ public class HeapSimulada {
         }
         System.out.println("----------------------------------------");
     }
-
+    /**
+      Imprime os resultados finais e as métricas da simulação.
+      @param tempoTotalMs
+     */
     public void imprimirResultado(long tempoTotalMs) {
         System.out.println("\n----- RESULTADOS FINAIS -----");
         System.out.println("Estrategia de Alocacao Utilizada: " + estrategia);
